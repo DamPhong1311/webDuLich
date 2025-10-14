@@ -1,49 +1,114 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <title>@yield('title','Du lịch Việt Nam')</title>
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body style="font-family:sans-serif;margin:0;">
 
-<header style="background:#007bff;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
-    <a href="{{ route('home') }}" style="color:white;text-decoration:none;font-weight:bold;">VietNamTravel</a>
-    
-    <nav style="display:flex;gap:15px;align-items:center;">
-      <a href="{{ route('home') }}" style="color:white;text-decoration:none;">Trang chủ</a>
-      <a href="{{ route('destinations.index') }}" style="color:white;text-decoration:none;">Điểm đến</a>
-      <a href="{{ route('articles.index') }}" style="color:white;text-decoration:none;">Bài viết</a>
-      <a href="{{ route('contact.form') }}" style="color:white;text-decoration:none;">Liên hệ</a>
-       
+<body class="myapp-body">
+
+
+  <header class="myapp-header">
+    <a href="{{ route('home') }}" class="myapp-brand">VietNamTravel</a>
+    <nav class="myapp-nav">
+      <a href="{{ route('home') }}" class="myapp-nav-link">Trang chủ</a>
+      <a href="{{ route('destinations.index') }}" class="myapp-nav-link">Điểm đến</a>
+      <a href="{{ route('articles.index') }}" class="myapp-nav-link">Bài viết</a>
+      <a href="{{ route('contact.form') }}" class="myapp-nav-link">Liên hệ</a>
       @if(Auth::check() && Auth::user()->isAdmin())
-        <a href="{{ route('admin.dashboard') }}" 
-           style="padding:6px 12px;background:#ffc107;color:black;border-radius:5px;text-decoration:none;">
-           Quản lý Admin
-        </a>
+      <a href="{{ route('admin.dashboard') }}" class="myapp-admin-link">Quản lý Admin</a>
       @endif
-
       @auth
-        <span style="color:white;">Xin chào, {{ Auth::user()->name }}</span>
-        <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-          @csrf
-          <button type="submit" style="background:none;border:none;color:white;cursor:pointer;">Đăng xuất</button>
-        </form>
+      <span class="myapp-user">Xin chào, {{ Auth::user()->name }}</span>
+      <form method="POST" action="{{ route('logout') }}" class="myapp-logout-form">
+        @csrf
+        <button type="submit" class="myapp-logout-btn">Đăng xuất</button>
+      </form>
       @else
-        <a href="{{ route('login') }}" style="color:white;text-decoration:none;">Đăng nhập</a>
-        <a href="{{ route('register') }}" style="color:white;text-decoration:none;">Đăng ký</a>
+      <a href="{{ route('login') }}" class="myapp-nav-link">Đăng nhập</a>
+      <a href="{{ route('register') }}" class="myapp-nav-link">Đăng ký</a>
       @endauth
     </nav>
-</header>
+  </header>
 
 
-  <main style="padding:20px;">
+  <main class="myapp-main">
     @yield('content')
   </main>
 
-  <footer style="background:#f2f2f2;padding:20px;text-align:center;color:#555;">
+  <footer class="myapp-footer">
     © {{ date('Y') }} VietNamTravel - Trang web du lịch Việt Nam
   </footer>
+</body>
+<style>
+  .myapp-body {
+    font-family: sans-serif;
+    margin: 0;
+  }
+
+  .myapp-header {
+    background: #007bff;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .myapp-brand {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .myapp-nav {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .myapp-nav-link {
+    color: white;
+    text-decoration: none;
+  }
+
+  .myapp-admin-link {
+    padding: 6px 12px;
+    background: #ffc107;
+    color: black;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+
+  .myapp-user {
+    color: white;
+  }
+
+  .myapp-logout-form {
+    display: inline;
+  }
+
+  .myapp-logout-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+
+  .myapp-main {
+    padding: 20px;
+  }
+
+  .myapp-footer {
+    background: #f2f2f2;
+    padding: 20px;
+    text-align: center;
+    color: #555;
+  }
+</style>
 
 </body>
+
 </html>
