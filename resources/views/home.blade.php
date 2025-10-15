@@ -268,7 +268,6 @@
                         opacity: .9;
                     }
 
-                    /* ======= Card grid base ======= */
                     .home-destinations-grid,
                     .home-articles-grid {
                         display: grid;
@@ -283,7 +282,6 @@
                         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                     }
 
-                    /* ======= Card (glass-card with subtle lift) ======= */
                     .home-destination-card,
                     .home-article-card {
                         position: relative;
