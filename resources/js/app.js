@@ -1,6 +1,10 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
 
+// ================= TEST LINE =================
+console.log("✅ app.js loaded and running!");
+// =============================================
+
 window.Alpine = Alpine;
 Alpine.start();
 
@@ -11,6 +15,7 @@ Alpine.start();
  * @param {('favorite'|'save')} type The type of action.
  */
 function handleToggleAction(button, url, type) {
+    console.log(`Button clicked! Type: ${type}, Slug: ${button.dataset.slug}`); // Thêm log khi click
     const svg = button.querySelector('svg');
 
     fetch(url, {
@@ -47,7 +52,6 @@ function handleToggleAction(button, url, type) {
 
 // Use event delegation to handle clicks efficiently across the entire page
 document.addEventListener('click', function(e) {
-    // Find the closest .favorite-btn to the clicked element
     const favoriteBtn = e.target.closest('.favorite-btn');
     if (favoriteBtn) {
         e.preventDefault();
@@ -55,7 +59,6 @@ document.addEventListener('click', function(e) {
         handleToggleAction(favoriteBtn, `/destinations/${slug}/favorite`, 'favorite');
     }
 
-    // Find the closest .save-btn to the clicked element
     const saveBtn = e.target.closest('.save-btn');
     if (saveBtn) {
         e.preventDefault();
