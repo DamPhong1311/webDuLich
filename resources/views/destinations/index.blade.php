@@ -4,62 +4,62 @@
 <h1 class="destinations-title">Điểm đến</h1>
 
 <div class="destinations-list-grid">
-  @foreach($destinations as $d)
-  @php
-  $img = $d->cover_image;
-  $isUrl = Str::startsWith($img, ['http://', 'https://']);
-  $imgSrc = $isUrl ? $img : asset('storage/'.$img);
-  @endphp
-  <article class="destinations-list-item">
-    <a href="{{ route('destinations.show', $d) }}" class="destinations-list-link">
-      @if($d->cover_image)
-      <img src="{{ $imgSrc }}" alt="{{ $d->title }}" class="destinations-list-img">
-      @else
-      <div class="destinations-list-noimg">No image</div>
-      @endif
+    @foreach($destinations as $d)
+    @php
+    $img = $d->cover_image;
+    $isUrl = Str::startsWith($img, ['http://', 'https://']);
+    $imgSrc = $isUrl ? $img : asset('storage/'.$img);
+    @endphp
+    <article class="destinations-list-item">
+        <a href="{{ route('destinations.show', $d) }}" class="destinations-list-link">
+            @if($d->cover_image)
+            <img src="{{ $imgSrc }}" alt="{{ $d->title }}" class="destinations-list-img">
+            @else
+            <div class="destinations-list-noimg">No image</div>
+            @endif
 
-      <h2 class="destinations-list-title">{{ $d->title }}</h2>
-    </a>
-    <p class="destinations-list-excerpt">{{ Str::limit($d->excerpt ?? $d->content, 120) }}</p>
-  </article>
+            <h2 class="destinations-list-title">{{ $d->title }}</h2>
+        </a>
+        <p class="destinations-list-excerpt">{{ Str::limit($d->excerpt ?? $d->content, 120) }}</p>
+    </article>
 
-  @endforeach
+    @endforeach
 </div>
 
-<div class="destinations-pagination">
-  {{ $destinations->links() }}
+<div class="pagination-wrapper">
+    {{ $destinations->links() }}
 </div>
 
 <style>
-  .destinations-title {
+.destinations-title {
     margin-bottom: 16px;
-  }
+}
 
-  .destinations-list-grid {
+.destinations-list-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 18px;
-  }
+}
 
-  .destinations-list-item {
+.destinations-list-item {
     border: 1px solid #eee;
     padding: 12px;
     border-radius: 6px;
-  }
+}
 
-  .destinations-list-link {
+.destinations-list-link {
     text-decoration: none;
     color: inherit;
-  }
+}
 
-  .destinations-list-img {
+.destinations-list-img {
     width: 100%;
     height: 180px;
     object-fit: cover;
     border-radius: 4px;
-  }
+}
 
-  .destinations-list-noimg {
+.destinations-list-noimg {
     width: 100%;
     height: 180px;
     background: #f0f0f0;
@@ -67,18 +67,43 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+}
 
-  .destinations-list-title {
+.destinations-list-title {
     margin-top: 10px;
-  }
+}
 
-  .destinations-list-excerpt {
+.destinations-list-excerpt {
     color: #666;
-  }
+}
 
-  .destinations-pagination {
+.destinations-pagination {
     margin-top: 18px;
-  }
+}
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination .page-link {
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    margin: 0 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.pagination .page-link:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
 </style>
 @endsection

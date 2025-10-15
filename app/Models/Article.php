@@ -23,4 +23,13 @@ class Article extends Model
     protected $casts = [
         'published_at' => 'datetime',
     ];
+    public function comments()
+    {
+        return $this->morphMany(\App\Models\Comment::class, 'commentable')->latest();
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug'; // cho implicit route model binding
+    }
 }

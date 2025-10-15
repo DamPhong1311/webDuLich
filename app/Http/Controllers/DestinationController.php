@@ -39,6 +39,9 @@ class DestinationController extends Controller
      */
     public function show(Destination $destination)
     {
+        $destination->load([
+            'comments.user:id,name'
+        ]);
         return view('destinations.show', compact('destination'));
     }
 

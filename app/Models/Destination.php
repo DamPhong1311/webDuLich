@@ -20,9 +20,16 @@ class Destination extends Model
     ];
     protected $casts = [
         'published_at' => 'datetime',
-        'featured' => 'boolean',    
-        'gallery' => 'array',   
+        'featured' => 'boolean',
+        'gallery' => 'array',
     ];
+    public function comments()
+    {
+        return $this->morphMany(\App\Models\Comment::class, 'commentable')->latest();
+    }
 
-
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }

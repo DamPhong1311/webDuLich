@@ -6,6 +6,8 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+
 
 class ArticleController extends Controller
 {
@@ -20,7 +22,7 @@ class ArticleController extends Controller
 
     public function create()
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             abort(403, 'Bạn cần đăng nhập để tạo bài viết.');
         }
         return view('articles.create');
@@ -41,7 +43,7 @@ class ArticleController extends Controller
             'excerpt' => $validated['excerpt'] ?? '',
             'content' => $validated['content'] ?? '',
             'cover_image' => $validated['cover_image'] ?? null,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'published_at' => Carbon::now(),
         ]);
 
@@ -50,12 +52,16 @@ class ArticleController extends Controller
 
     public function show(Article $article)
     {
+        $article->load([
+            'author:id,name',
+            'comments.user:id,name' // load người viết comment để hiện avatar/tên
+        ]);
         return view('articles.show', compact('article'));
     }
 
     public function edit(Article $article)
     {
-        if ($article->user_id !== auth()->id()) {
+        if ($article->user_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền sửa bài này');
         }
 
@@ -64,7 +70,7 @@ class ArticleController extends Controller
 
     public function update(Request $request, Article $article)
     {
-        if ($article->user_id !== auth()->id()) {
+        if ($article->user_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền cập nhật bài này');
         }
 
@@ -75,14 +81,14 @@ class ArticleController extends Controller
             'cover_image' => 'nullable|url',
         ]);
 
-        $article->update($validated); 
+        $article->update($validated);
 
         return redirect()->route('articles.index')->with('success', 'Cập nhật bài viết thành công!');
     }
 
-    public function destroy(Article $article) 
+    public function destroy(Article $article)
     {
-        if ($article->user_id !== auth()->id()) {
+        if ($article->user_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền xóa bài này');
         }
 

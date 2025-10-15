@@ -24,9 +24,7 @@
 
     {{-- ẢNH CHÍNH --}}
     @if($article->cover_image)
-    <img src="{{ $article->cover_image }}"
-        alt="{{ $article->title }}"
-        class="article-cover-image">
+    <img src="{{ $article->cover_image }}" alt="{{ $article->title }}" class="article-cover-image">
     @endif
 
     {{-- TRÍCH ĐOẠN --}}
@@ -40,41 +38,42 @@
     <div class="article-content">
         {!! nl2br(e($article->content)) !!}
     </div>
+    @include('components.comments', ['model' => $article])
 
     <style>
-        .article-article {
-            max-width: 900px;
-            margin: auto;
-        }
+    .article-article {
+        max-width: 900px;
+        margin: auto;
+    }
 
-        .article-slug {
-            color: #888;
-            font-size: 14px;
-        }
+    .article-slug {
+        color: #888;
+        font-size: 14px;
+    }
 
-        .article-date {
-            color: #777;
-        }
+    .article-date {
+        color: #777;
+    }
 
-        .article-cover-image {
-            width: 100%;
-            max-height: 450px;
-            object-fit: cover;
-            margin: 12px 0;
-            border-radius: 6px;
-        }
+    .article-cover-image {
+        width: 100%;
+        max-height: 450px;
+        object-fit: cover;
+        margin: 12px 0;
+        border-radius: 6px;
+    }
 
-        .article-excerpt {
-            font-style: italic;
-            color: #555;
-            background: #f8f8f8;
-            padding: 12px;
-            border-left: 4px solid #007bff;
-        }
+    .article-excerpt {
+        font-style: italic;
+        color: #555;
+        background: #f8f8f8;
+        padding: 12px;
+        border-left: 4px solid #007bff;
+    }
 
-        .article-content {
-            line-height: 1.8;
-        }
+    .article-content {
+        line-height: 1.8;
+    }
     </style>
 </article>
 @endsection
