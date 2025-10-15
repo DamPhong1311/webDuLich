@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DestinationActionController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\Admin\DestinationController as AdminDestinationController;
 use App\Http\Controllers\ArticleController;
@@ -58,3 +59,12 @@ Route::middleware('auth')->group(function () {
 Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
     ->middleware('auth')
     ->name('comments.destroy');
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/saved-destinations', [DestinationActionController::class, 'savedDestinations'])->name('destinations.saved');
+
+    Route::post('/destinations/{slug}/toggle-favorite', [DestinationActionController::class, 'toggleFavorite'])->name('destinations.toggleFavorite');
+
+    Route::post('/destinations/{slug}/toggle-save', [DestinationActionController::class, 'toggleSave'])->name('destinations.toggleSave');
+
+});

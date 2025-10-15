@@ -4,445 +4,165 @@
 <head>
     <meta charset="UTF-8">
     <title>@yield('title','Du lịch Việt Nam')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- CSRF Token for AJAX requests --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Scripts and Styles with Vite --}}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body class="myapp-body">
-
-
     <header class="myapp-header">
         <a href="{{ route('home') }}" class="myapp-brand">VietNamTravel</a>
         <nav class="myapp-nav">
-            <a href="{{ route('home') }}" class="myapp-nav-link">Trang chủ</a>
-            <a href="{{ route('destinations.index') }}" class="myapp-nav-link">Điểm đến</a>
-            <a href="{{ route('articles.index') }}" class="myapp-nav-link">Bài viết</a>
-            <a href="{{ route('contact.form') }}" class="myapp-nav-link">Liên hệ</a>
-            @if(Auth::check() && Auth::user()->isAdmin())
-            <a href="{{ route('admin.dashboard') }}" class="myapp-admin-link">Quản lý Admin</a>
-            @endif
+            <a href="{{ route('home') }}" class="myapp-nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Trang chủ</a>
+            <a href="{{ route('destinations.index') }}" class="myapp-nav-link {{ request()->routeIs('destinations.index') ? 'active' : '' }}">Điểm đến</a>
+            <a href="{{ route('articles.index') }}" class="myapp-nav-link {{ request()->routeIs('articles.index') ? 'active' : '' }}">Bài viết</a>
+            <a href="{{ route('contact.form') }}" class="myapp-nav-link {{ request()->routeIs('contact.form') ? 'active' : '' }}">Liên hệ</a>
+
+            {{-- Add Saved Destinations link for logged-in users --}}
             @auth
-            <span class="myapp-user">Xin chào, {{ Auth::user()->name }}</span>
-            <form method="POST" action="{{ route('logout') }}" class="myapp-logout-form">
-                @csrf
-                <button type="submit" class="myapp-logout-btn">Đăng xuất</button>
-            </form>
-            @else
-            <a href="{{ route('login') }}" class="myapp-nav-link">Đăng nhập</a>
-            <a href="{{ route('register') }}" class="myapp-nav-link">Đăng ký</a>
+            <a href="{{ route('destinations.saved') }}" class="myapp-nav-link {{ request()->routeIs('destinations.saved') ? 'active' : '' }}">Đã lưu</a>
             @endauth
+
+            <div class="myapp-auth">
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <a href="{{ route('admin.dashboard') }}" class="myapp-admin-link">Quản lý</a>
+                @endif
+                @auth
+                <span class="myapp-user">Chào, {{ Auth::user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}" class="myapp-logout-form">
+                    @csrf
+                    <button type="submit" class="myapp-logout-btn">Đăng xuất</button>
+                </form>
+                @else
+                <a href="{{ route('login') }}" class="myapp-login-btn">Đăng nhập</a>
+                <a href="{{ route('register') }}" class="myapp-register-btn">Đăng ký</a>
+                @endauth
+            </div>
         </nav>
     </header>
-
 
     <main class="myapp-main">
         @yield('content')
     </main>
 
     <footer class="myapp-footer">
-        © {{ date('Y') }} VietNamTravel - Trang web du lịch Việt Nam
+        © {{ date('Y') }} VietNamTravel
     </footer>
 </body>
-<!-- <style>
-.myapp-body {
-    font-family: sans-serif;
-    margin: 0;
-}
-
-.myapp-header {
-    background: #007bff;
-    color: white;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.myapp-brand {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.myapp-nav {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.myapp-nav-link {
-    color: white;
-    text-decoration: none;
-}
-
-.myapp-admin-link {
-    padding: 6px 12px;
-    background: #ffc107;
-    color: black;
-    border-radius: 5px;
-    text-decoration: none;
-}
-
-.myapp-user {
-    color: white;
-}
-
-.myapp-logout-form {
-    display: inline;
-}
-
-.myapp-logout-btn {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-}
-
-.myapp-main {
-    padding: 20px;
-}
-
-.myapp-footer {
-    background: #f2f2f2;
-    padding: 20px;
-    text-align: center;
-    color: #555;
-}
-</style> -->
 <style>
-/* ========= VietNamTravel – Polished Theme (scoped to .myapp-*) ========= */
-/* Color system */
 :root {
-    --vt-bg: #0b1535;
-    --vt-surface: #0f1b4b;
-    --vt-surface-2: #101a3f;
-    --vt-text: #0f172a;
-    --vt-text-muted: #64748b;
-    --vt-white: #ffffff;
-
-    --vt-primary: #2563eb;
-    /* Indigo/Blue */
-    --vt-primary-2: #3b82f6;
-    /* Lighter */
-    --vt-accent: #22c55e;
-    /* Green */
-    --vt-warning: #f59e0b;
-    /* Amber */
-
-    --vt-border: rgba(15, 23, 42, 0.12);
-    --vt-shadow: 0 10px 30px rgba(2, 6, 23, 0.10);
-    --vt-shadow-2: 0 14px 40px rgba(37, 99, 235, 0.22);
-
-    --vt-radius: 14px;
-    --vt-radius-sm: 10px;
-    --vt-radius-xs: 8px;
-
-    --vt-transition: 220ms cubic-bezier(.2, .6, .2, 1);
+    --primary: #0d6efd;
+    --secondary: #6c757d;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --border: #dee2e6;
+    --border-light: #f1f5f9;
+    --text-muted: #64748b;
 }
 
-/* Light/Dark auto theming */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --vt-bg: #070b1f;
-        --vt-surface: #0b102b;
-        --vt-surface-2: #0e1540;
-        --vt-text: #e5e7eb;
-        --vt-text-muted: #9aa4b2;
-        --vt-border: rgba(148, 163, 184, 0.12);
-        --vt-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        --vt-shadow-2: 0 14px 40px rgba(59, 130, 246, 0.25);
-    }
-}
-
-/* Base */
 .myapp-body {
-    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Inter, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    font-family: 'Inter', sans-serif;
     margin: 0;
-    color: var(--vt-text);
-    background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(59, 130, 246, .12), transparent 55%),
-        radial-gradient(1000px 600px at 110% -20%, rgba(34, 197, 94, .10), transparent 50%),
-        #f8fafc;
+    background-color: var(--light);
+    color: var(--dark);
     line-height: 1.6;
 }
 
-/* ======= Header ======= */
 .myapp-header {
+    background: white;
+    padding: 12px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 14px 22px;
-    border-bottom: 1px solid var(--vt-border);
-    background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, .75));
-    backdrop-filter: saturate(130%) blur(8px);
-    box-shadow: var(--vt-shadow);
-}
-
-@media (prefers-color-scheme: dark) {
-    .myapp-header {
-        background: linear-gradient(180deg, rgba(13, 19, 48, .72), rgba(13, 19, 48, .62));
-        border-bottom-color: rgba(255, 255, 255, 0.06);
-    }
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .myapp-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
+    color: var(--primary);
     text-decoration: none;
     font-weight: 800;
-    letter-spacing: .2px;
-    color: var(--vt-primary);
-    font-size: 1.3rem;
-    transform: translateZ(0);
-    transition: transform var(--vt-transition), text-shadow var(--vt-transition);
+    font-size: 24px;
 }
 
-.myapp-brand::before {
-    content: "";
-    width: 28px;
-    height: 28px;
-    border-radius: 9px;
-    background: conic-gradient(from 160deg at 50% 50%, var(--vt-primary), var(--vt-primary-2), var(--vt-accent));
-    box-shadow: 0 6px 18px rgba(37, 99, 235, .35), inset 0 -2px 6px rgba(255, 255, 255, .35);
-}
-
-.myapp-brand:hover {
-    transform: translateY(-1px);
-    text-shadow: 0 6px 18px rgba(37, 99, 235, .25);
-}
-
-/* ======= Nav ======= */
 .myapp-nav {
     display: flex;
+    gap: 25px;
     align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
 }
 
-.myapp-nav-link,
-.myapp-admin-link,
-.myapp-logout-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    height: 40px;
-    padding: 0 14px;
-    border-radius: var(--vt-radius-xs);
+.myapp-nav-link {
+    color: #495057;
     text-decoration: none;
     font-weight: 600;
-    letter-spacing: .2px;
-    border: 1px solid transparent;
-    transition: all var(--vt-transition);
-    outline: none;
-}
-
-/* Primary text links */
-.myapp-nav-link {
-    color: var(--vt-text);
-    background: transparent;
+    font-size: 15px;
+    transition: color 0.2s;
+    position: relative;
+    padding-bottom: 4px;
 }
 
 .myapp-nav-link::after {
-    content: "";
+    content: '';
     position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 8px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     height: 2px;
-    border-radius: 2px;
-    background: linear-gradient(90deg, var(--vt-primary), var(--vt-primary-2));
-    opacity: 0;
-    transform: scaleX(.4);
-    transform-origin: center;
-    transition: transform var(--vt-transition), opacity var(--vt-transition);
+    background-color: var(--primary);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
 }
-
-.myapp-nav-link:hover {
-    background: rgba(37, 99, 235, 0.08);
-}
-
-.myapp-nav-link:hover::after {
-    opacity: 1;
+.myapp-nav-link:hover::after,
+.myapp-nav-link.active::after {
     transform: scaleX(1);
+    transform-origin: bottom left;
+}
+.myapp-nav-link:hover,
+.myapp-nav-link.active {
+    color: var(--primary);
 }
 
-.myapp-nav-link:focus-visible {
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, .25);
+.myapp-auth {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: 20px;
 }
 
-/* Admin CTA */
-.myapp-admin-link {
-    color: #1f2937;
-    background: linear-gradient(180deg, #ffe08a, #ffc107);
-    border-color: rgba(31, 41, 55, .08);
-    box-shadow: 0 6px 18px rgba(245, 158, 11, .35);
-}
-
-.myapp-admin-link:hover {
-    filter: brightness(1.03);
-    transform: translateY(-1px);
-}
-
-/* User & Auth */
-.myapp-user {
-    color: var(--vt-text-muted);
+.myapp-admin-link, .myapp-login-btn, .myapp-register-btn, .myapp-logout-btn {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
     font-weight: 600;
-    margin-left: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
-.myapp-logout-form {
-    display: inline;
-}
+.myapp-admin-link { background: #ffc107; color: black; }
+.myapp-admin-link:hover { background: #ffca2c; }
 
-.myapp-logout-btn {
-    color: var(--vt-white);
-    background: linear-gradient(180deg, #ef4444, #dc2626);
-    border-color: rgba(239, 68, 68, .15);
-    box-shadow: 0 10px 24px rgba(239, 68, 68, .35);
-}
+.myapp-user { color: var(--text-muted); font-weight: 500; font-size: 14px; }
+.myapp-login-btn { background: #e9ecef; color: #495057; }
+.myapp-login-btn:hover { background: #dde2e7; }
+.myapp-register-btn { background: var(--primary); color: white; }
+.myapp-register-btn:hover { background: #0b5ed7; }
+.myapp-logout-btn { background: #dc3545; color: white; }
+.myapp-logout-btn:hover { background: #c82333; }
 
-.myapp-logout-btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.05);
-}
-
-.myapp-logout-btn:focus-visible {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, .35);
-}
-
-/* ======= Main ======= */
-.myapp-main {
-    padding: clamp(16px, 3vw, 28px);
-}
-
-.myapp-main>* {
-    max-width: 1100px;
-    margin-inline: auto;
-    background: linear-gradient(180deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, .88));
-    border: 1px solid var(--vt-border);
-    border-radius: var(--vt-radius);
-    box-shadow: var(--vt-shadow);
-    padding: clamp(16px, 2.2vw, 28px);
-}
-
-@media (prefers-color-scheme: dark) {
-    .myapp-main>* {
-        background: linear-gradient(180deg, rgba(15, 23, 42, .55), rgba(15, 23, 42, .50));
-        border-color: rgba(255, 255, 255, .06);
-    }
-}
-
-/* Utility: subtle section header inside content */
-.myapp-main h1,
-.myapp-main h2,
-.myapp-main h3 {
-    letter-spacing: .2px;
-    line-height: 1.25;
-}
-
-.myapp-main h1 {
-    font-size: clamp(1.6rem, 2.4vw, 2rem);
-}
-
-.myapp-main h2 {
-    font-size: clamp(1.3rem, 2vw, 1.6rem);
-    color: var(--vt-primary);
-}
-
-.myapp-main h3 {
-    font-size: clamp(1.1rem, 1.6vw, 1.3rem);
-    color: var(--vt-text);
-}
-
-/* ======= Footer ======= */
-.myapp-footer {
-    color: var(--vt-text-muted);
-    text-align: center;
-    padding: 26px 20px 40px;
-    background:
-        radial-gradient(700px 120px at 50% 0%, rgba(37, 99, 235, .12), transparent 70%),
-        linear-gradient(0deg, rgba(15, 23, 42, .04), rgba(15, 23, 42, .00));
-    border-top: 1px solid var(--vt-border);
-}
-
-/* ======= Small screens ======= */
-@media (max-width: 960px) {
-    .myapp-header {
-        padding: 12px 16px;
-    }
-
-    .myapp-brand {
-        font-size: 1.15rem;
-    }
-
-    .myapp-nav {
-        gap: 6px;
-    }
-
-    .myapp-nav-link,
-    .myapp-admin-link,
-    .myapp-logout-btn {
-        height: 38px;
-        padding: 0 12px;
-    }
-}
-
-@media (max-width: 640px) {
-    .myapp-header {
-        flex-wrap: wrap;
-        gap: 10px 14px;
-    }
-
-    .myapp-nav {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .myapp-user {
-        width: 100%;
-        text-align: right;
-    }
-}
-
-/* ======= Nice extras ======= */
-/* Smooth hover elevate for any card-like content inside .myapp-main */
-.myapp-main .card,
-.myapp-main .panel,
-.myapp-main .box {
-    border-radius: var(--vt-radius);
-    border: 1px solid var(--vt-border);
-    box-shadow: var(--vt-shadow);
-    transition: transform var(--vt-transition), box-shadow var(--vt-transition);
-}
-
-.myapp-main .card:hover,
-.myapp-main .panel:hover,
-.myapp-main .box:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--vt-shadow-2);
-}
-
-/* Better focus styles for links/buttons */
-.myapp-nav-link:focus-visible,
-.myapp-admin-link:focus-visible,
-.myapp-logout-btn:focus-visible,
-.myapp-brand:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, .35);
-    border-color: rgba(59, 130, 246, .35);
-}
-
-/* Reduce motion if user prefers */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        transition: none !important;
-    }
-}
+.myapp-main { padding: 20px; }
+.myapp-footer { background: #e9ecef; padding: 30px; text-align: center; color: var(--secondary); margin-top: 40px; border-top: 1px solid var(--border); }
 </style>
-</body>
 
 </html>
+

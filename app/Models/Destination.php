@@ -18,18 +18,27 @@ class Destination extends Model
         'featured',
         'published_at'
     ];
+
     protected $casts = [
         'published_at' => 'datetime',
         'featured' => 'boolean',
         'gallery' => 'array',
     ];
-    public function comments()
-    {
-        return $this->morphMany(\App\Models\Comment::class, 'commentable')->latest();
-    }
 
     public function getRouteKeyName()
     {
         return 'slug';
     }
+
+    public function comments()
+    {
+        return $this->morphMany(\App\Models\Comment::class, 'commentable')->latest();
+    }
+
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'user_favorite_destination', 'destination_slug', 'user_id', 'slug', 'id');
+    }
 }
+

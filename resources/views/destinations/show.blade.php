@@ -8,6 +8,9 @@
     {{-- TIÊU ĐỀ --}}
     <h1>{{ $destination->title }}</h1>
 
+    {{-- DÒNG MỚI: Thêm component nút bấm vào đây --}}
+    <x-destination-actions :destination="$destination" :isFavorited="$isFavorited" :isSaved="$isSaved" />
+
     {{-- SLUG và THÔNG TIN --}}
     <p class="destination-slug">
         🔗 Slug: <code>{{ $destination->slug }}</code>
@@ -29,8 +32,6 @@
     </blockquote>
     @endif
 
-    {{-- BỘ SƯU TẬP ẢNH --}}
-    {{-- Trong show.blade.php --}}
     {{-- BỘ SƯU TẬP ẢNH --}}
     @if($destination->gallery)
     @php
@@ -127,3 +128,4 @@
     </style>
 </article>
 @endsection
+
