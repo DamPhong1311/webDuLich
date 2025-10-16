@@ -1,69 +1,65 @@
 @extends('layouts.myApp')
 @section('title','Điểm đến')
 @section('content')
-<h1 class="page-title">Tất cả điểm đến</h1>
-<div class="card-grid">
-  @forelse($destinations as $d)
-    @php
-        $img = $d->cover_image;
-        $isUrl = Str::startsWith($img, ['http://', 'https://']);
-        $imgSrc = $isUrl ? $img : asset('storage/'.$img);
-    @endphp
-    <div class="home-destination-card">
-        @auth
-            <div class="card-actions">
-                <button class="favorite-btn" data-slug="{{ $d->slug }}" title="Yêu thích">
-                    <svg width="24" height="24" viewBox="0 0 24 24"
-                        fill="{{ Auth::user()->favoriteDestinations->contains('slug', $d->slug) ? 'red' : 'none' }}"
-                        stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                </button>
-                <button class="save-btn" data-slug="{{ $d->slug }}" title="Lưu">
-                    <svg width="24" height="24" viewBox="0 0 24 24"
-                        fill="{{ Auth::user()->savedDestinations->contains('slug', $d->slug) ? '#0d6efd' : 'none' }}"
-                        stroke="#0d6efd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                </button>
-            </div>
-        @endauth
-        <a href="{{ route('destinations.show', $d) }}" class="card-content-link">
-            @if($d->cover_image)
-            <img src="{{ $imgSrc }}" class="home-destination-img" alt="{{ $d->title }}">
-            @endif
-            <div class="home-destination-content">
-                <h3>{{ $d->title }}</h3>
-                <p class="home-destination-excerpt">{{ Str::limit($d->excerpt ?? $d->content, 100) }}</p>
-                 @if($d->province)
-                    <p class="home-destination-province">📍 {{ $d->province }}</p>
-                @endif
-            </div>
-        </a>
-    </div>
-  @empty
-    <p>Không tìm thấy điểm đến nào.</p>
-  @endforelse
+
+<div class="search-filter-container">
+    <h1 class="page-title">Khám phá các điểm đến</h1>
+
+    {{-- SEARCH & FILTER FORM --}}
+    <form action="{{ route('destinations.index') }}" method="GET" class="search-filter-form">
+        <div class="form-group search-group">
+            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên, mô tả..." value="{{ $searchTerm ?? '' }}">
+        </div>
+        <div class="form-group filter-group">
+            <select name="province" class="form-control">
+                <option value="">Tất cả tỉnh/thành</option>
+                @foreach($provinces as $province)
+                    <option value="{{ $province }}" {{ $selectedProvince == $province ? 'selected' : '' }}>
+                        {{ $province }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            <a href="{{ route('destinations.index') }}" class="btn btn-secondary">Xóa bộ lọc</a>
+        </div>
+    </form>
 </div>
-<div class="pagination-wrapper">{{ $destinations->links() }}</div>
+
+
+@if($destinations->isEmpty())
+    <div class="no-results">
+        <p>Không tìm thấy kết quả nào phù hợp.</p>
+    </div>
+@else
+    <div class="card-grid">
+        @foreach($destinations as $d)
+            @include('components.destination-card', ['d' => $d])
+        @endforeach
+    </div>
+    <div class="pagination-wrapper">
+        {{ $destinations->links() }}
+    </div>
+@endif
 
 <style>
-  .page-title { margin-bottom: 24px; font-size: 2rem; font-weight: 700; }
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-  .pagination-wrapper { margin-top: 30px; display: flex; justify-content: center; }
-
-  /* Reusing styles from home for consistency */
-  .home-destination-card { position: relative; display: grid; text-decoration: none; color: inherit; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 28px rgba(2, 6, 23, .06); transition: all 240ms cubic-bezier(.2, .65, .2, 1); }
-  .home-destination-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(59, 130, 246, .18); border-color: rgba(147, 197, 253, .55); }
-  .home-destination-img { width: 100%; height: 190px; object-fit: cover; }
-  .home-destination-content { padding: 14px; }
-  .home-destination-content h3 { margin: 0 0 6px; font-size: 1.06rem; font-weight: 800; color: #102743; }
-  .home-destination-excerpt { margin: 0 0 10px; color: #475569; }
-  .home-destination-province { margin: 0; font-size: .92rem; font-weight: 700; color: #285ea8; background: #e6f1ff; display: inline-flex; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(147, 197, 253, .55); }
-  .card-content-link { text-decoration: none; color: inherit; display: block; }
-  .card-actions { position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; gap: 8px; background-color: rgba(255, 255, 255, 0.8); padding: 6px; border-radius: 999px; backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-  .card-actions button { background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-  .card-actions button:hover { transform: scale(1.15); }
+.page-title { margin-bottom: 24px; font-size: 2.2rem; font-weight: 700; color: #1a202c; text-align: center;}
+.search-filter-container { background-color: #f8f9fa; padding: 24px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.search-filter-form { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.form-group { flex: 1; min-width: 200px; }
+.search-group { flex-grow: 2; }
+.form-control { width: 100%; padding: 10px 14px; border: 1px solid #ced4da; border-radius: 8px; font-size: 1rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
+.form-control:focus { border-color: #86b7fe; outline: 0; box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25); }
+.form-actions { display: flex; gap: 10px; }
+.btn { display: inline-block; font-weight: 400; line-height: 1.5; text-align: center; text-decoration: none; vertical-align: middle; cursor: pointer; user-select: none; background-color: transparent; border: 1px solid transparent; padding: 10px 18px; font-size: 1rem; border-radius: 8px; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
+.btn-primary { color: #fff; background-color: #0d6efd; border-color: #0d6efd; }
+.btn-primary:hover { background-color: #0b5ed7; border-color: #0a58ca; }
+.btn-secondary { color: #fff; background-color: #6c757d; border-color: #6c757d; }
+.btn-secondary:hover { background-color: #5c636a; border-color: #565e64; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.pagination-wrapper { margin-top: 30px; display: flex; justify-content: center; }
+.no-results { text-align: center; padding: 40px; background-color: #fff; border-radius: 12px; }
 </style>
 @endsection
 
