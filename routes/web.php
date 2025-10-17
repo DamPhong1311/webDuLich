@@ -3,7 +3,6 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Import tất cả các controllers cần thiết
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\ArticleController;
@@ -13,6 +12,7 @@ use App\Http\Controllers\Admin\DestinationController as AdminDestinationControll
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\DestinationActionController;
+use App\Http\Controllers\MapApiController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -48,3 +48,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('contacts', AdminContactController::class)->only(['index', 'show', 'destroy']);
 });
 
+Route::get('/api/destinations', [MapApiController::class, 'destinations'])->name('api.destinations');
+Route::get('/api/articles', [MapApiController::class, 'articles'])->name('api.articles');
+
+Route::get('/map', function () {
+    return view('map.explore');
+})->name('map.explore');

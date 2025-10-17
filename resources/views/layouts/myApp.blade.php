@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>@yield('title','Du lịch Việt Nam')</title>
 
-    {{-- Thẻ CSRF Token, bắt buộc cho các request AJAX --}}
+    {{-- CSRF cho AJAX --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -18,23 +18,34 @@
 <body class="myapp-body">
     <header class="myapp-header">
         <a href="{{ route('home') }}" class="myapp-brand">VietNamTravel</a>
+
         <nav class="myapp-nav">
             <a href="{{ route('home') }}" class="myapp-nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Trang
                 chủ</a>
+
             <a href="{{ route('destinations.index') }}"
                 class="myapp-nav-link {{ request()->routeIs('destinations.index') ? 'active' : '' }}">Điểm đến</a>
+
             <a href="{{ route('articles.index') }}"
                 class="myapp-nav-link {{ request()->routeIs('articles.index') ? 'active' : '' }}">Bài viết</a>
+
+            {{-- Link Bản đồ khám phá (mục 10) --}}
+            <a href="{{ route('map.explore') }}"
+                class="myapp-nav-link {{ request()->routeIs('map.explore') ? 'active' : '' }}">Bản đồ</a>
+
             <a href="{{ route('contact.form') }}"
                 class="myapp-nav-link {{ request()->routeIs('contact.form') ? 'active' : '' }}">Liên hệ</a>
+
             @auth
             <a href="{{ route('destinations.saved') }}"
                 class="myapp-nav-link {{ request()->routeIs('destinations.saved') ? 'active' : '' }}">Đã lưu</a>
             @endauth
+
             <div class="myapp-auth">
                 @if(Auth::check() && Auth::user()->isAdmin())
                 <a href="{{ route('admin.dashboard') }}" class="myapp-admin-link">Quản lý</a>
                 @endif
+
                 @auth
                 <span class="myapp-user">Chào, {{ Auth::user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}" class="myapp-logout-form">
@@ -55,9 +66,11 @@
 
     <footer class="myapp-footer">© {{ date('Y') }} VietNamTravel</footer>
 
+    {{-- Cho phép view con đẩy script (Leaflet, picker map, v.v.) --}}
+    @stack('scripts')
+
     <style>
     /* ========= VietNamTravel – Polished Theme (scoped to .myapp-*) ========= */
-    /* Color system */
     :root {
         --vt-bg: #0b1535;
         --vt-surface: #0f1b4b;
@@ -65,28 +78,19 @@
         --vt-text: #0f172a;
         --vt-text-muted: #64748b;
         --vt-white: #ffffff;
-
         --vt-primary: #2563eb;
-        /* Indigo/Blue */
         --vt-primary-2: #3b82f6;
-        /* Lighter */
         --vt-accent: #22c55e;
-        /* Green */
         --vt-warning: #f59e0b;
-        /* Amber */
-
-        --vt-border: rgba(15, 23, 42, 0.12);
-        --vt-shadow: 0 10px 30px rgba(2, 6, 23, 0.10);
-        --vt-shadow-2: 0 14px 40px rgba(37, 99, 235, 0.22);
-
+        --vt-border: rgba(15, 23, 42, .12);
+        --vt-shadow: 0 10px 30px rgba(2, 6, 23, .10);
+        --vt-shadow-2: 0 14px 40px rgba(37, 99, 235, .22);
         --vt-radius: 14px;
         --vt-radius-sm: 10px;
         --vt-radius-xs: 8px;
-
         --vt-transition: 220ms cubic-bezier(.2, .6, .2, 1);
     }
 
-    /* Light/Dark auto theming */
     @media (prefers-color-scheme: dark) {
         :root {
             --vt-bg: #070b1f;
@@ -94,13 +98,12 @@
             --vt-surface-2: #0e1540;
             --vt-text: #e5e7eb;
             --vt-text-muted: #9aa4b2;
-            --vt-border: rgba(148, 163, 184, 0.12);
-            --vt-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-            --vt-shadow-2: 0 14px 40px rgba(59, 130, 246, 0.25);
+            --vt-border: rgba(148, 163, 184, .12);
+            --vt-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+            --vt-shadow-2: 0 14px 40px rgba(59, 130, 246, .25);
         }
     }
 
-    /* Base */
     .myapp-body {
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Inter, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
         margin: 0;
@@ -131,7 +134,7 @@
     @media (prefers-color-scheme: dark) {
         .myapp-header {
             background: linear-gradient(180deg, rgba(13, 19, 48, .72), rgba(13, 19, 48, .62));
-            border-bottom-color: rgba(255, 255, 255, 0.06);
+            border-bottom-color: rgba(255, 255, 255, .06);
         }
     }
 
@@ -187,7 +190,6 @@
         outline: none;
     }
 
-    /* Primary text links */
     .myapp-nav-link {
         color: var(--vt-text);
         background: transparent;
@@ -209,7 +211,7 @@
     }
 
     .myapp-nav-link:hover {
-        background: rgba(37, 99, 235, 0.08);
+        background: rgba(37, 99, 235, .08);
     }
 
     .myapp-nav-link:hover::after {
@@ -221,7 +223,6 @@
         box-shadow: 0 0 0 3px rgba(37, 99, 235, .25);
     }
 
-    /* Admin CTA */
     .myapp-admin-link {
         color: #1f2937;
         background: linear-gradient(180deg, #ffe08a, #ffc107);
@@ -234,7 +235,6 @@
         transform: translateY(-1px);
     }
 
-    /* User & Auth */
     .myapp-user {
         color: var(--vt-text-muted);
         font-weight: 600;
@@ -261,7 +261,7 @@
         box-shadow: 0 0 0 3px rgba(239, 68, 68, .35);
     }
 
-    /* ===== Buttons: Login / Register (for guest state) ===== */
+    /* ===== Buttons: Login / Register (guest) ===== */
     .myapp-login-btn,
     .myapp-register-btn {
         display: inline-flex;
@@ -280,7 +280,6 @@
         -webkit-tap-highlight-color: transparent;
     }
 
-    /* Outline/ghost style for Login */
     .myapp-login-btn {
         color: var(--vt-primary);
         background: transparent;
@@ -303,7 +302,6 @@
         box-shadow: 0 0 0 3px rgba(59, 130, 246, .30);
     }
 
-    /* Primary gradient style for Register */
     .myapp-register-btn {
         color: #fff;
         background: linear-gradient(180deg, var(--vt-primary-2), var(--vt-primary));
@@ -326,7 +324,6 @@
         box-shadow: 0 0 0 3px rgba(59, 130, 246, .30);
     }
 
-    /* Disabled states (for anchors, use aria-disabled="true") */
     .myapp-login-btn[aria-disabled="true"],
     .myapp-register-btn[aria-disabled="true"] {
         opacity: .6;
@@ -355,7 +352,6 @@
         }
     }
 
-    /* Utility: subtle section header inside content */
     .myapp-main h1,
     .myapp-main h2,
     .myapp-main h3 {
@@ -389,7 +385,7 @@
     }
 
     /* ======= Small screens ======= */
-    @media (max-width: 960px) {
+    @media (max-width:960px) {
         .myapp-header {
             padding: 12px 16px;
         }
@@ -412,7 +408,7 @@
         }
     }
 
-    @media (max-width: 640px) {
+    @media (max-width:640px) {
         .myapp-header {
             flex-wrap: wrap;
             gap: 10px 14px;
@@ -430,7 +426,6 @@
     }
 
     /* ======= Nice extras ======= */
-    /* Smooth hover elevate for any card-like content inside .myapp-main */
     .myapp-main .card,
     .myapp-main .panel,
     .myapp-main .box {
@@ -447,7 +442,6 @@
         box-shadow: var(--vt-shadow-2);
     }
 
-    /* Better focus styles for links/buttons */
     .myapp-nav-link:focus-visible,
     .myapp-admin-link:focus-visible,
     .myapp-logout-btn:focus-visible,
@@ -459,7 +453,6 @@
         border-color: rgba(59, 130, 246, .35);
     }
 
-    /* Reduce motion if user prefers */
     @media (prefers-reduced-motion: reduce) {
         * {
             transition: none !important;

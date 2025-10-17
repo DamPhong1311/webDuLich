@@ -14,6 +14,8 @@ class Article extends Model
         'cover_image',
         'user_id',
         'published_at',
+        'latitude',
+        'longitude'
     ];
 
     public function author()
@@ -31,5 +33,10 @@ class Article extends Model
     public function getRouteKeyName()
     {
         return 'slug'; // cho implicit route model binding
+    }
+
+    public function scopeHasCoords($q)
+    {
+        return $q->whereNotNull('latitude')->whereNotNull('longitude');
     }
 }

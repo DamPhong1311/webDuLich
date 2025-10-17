@@ -16,7 +16,9 @@ class Destination extends Model
         'location',
         'province',
         'featured',
-        'published_at'
+        'published_at',
+        'latitude',
+        'longitude'
     ];
 
     protected $casts = [
@@ -40,5 +42,9 @@ class Destination extends Model
     {
         return $this->belongsToMany(User::class, 'user_favorite_destination', 'destination_slug', 'user_id', 'slug', 'id');
     }
-}
 
+    public function scopeHasCoords($q)
+    {
+        return $q->whereNotNull('latitude')->whereNotNull('longitude');
+    }
+}
