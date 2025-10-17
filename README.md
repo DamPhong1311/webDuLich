@@ -63,30 +63,9 @@ php artisan serve
 
 Truy cập: http://127.0.0.1:8000
 
-## C. Docker (nếu có)
+11. chạy npm i leaflet leaflet.markercluster
 
-1. Kiểm tra `docker-compose.yml`.
-2. Sao chép `.env` và chỉnh DB_HOST=mysql.
-3. Dựng container:
-    ```bash
-    docker compose up -d
-    ```
-4. Cài đặt trong container:
-    ```bash
-    docker compose exec php composer install
-    docker compose exec php php artisan key:generate
-    docker compose exec php php artisan migrate --seed
-    docker compose exec php php artisan storage:link
-    ```
-
-## D. Lỗi thường gặp
-
--   `No application encryption key has been specified` → chạy `php artisan key:generate`
--   `SQLSTATE[HY000] [2002] Connection refused` → kiểm tra cấu hình DB
--   `Class not found` → `composer dump-autoload` hoặc `php artisan optimize:clear`
--   Quyền truy cập: `chmod -R 775 storage bootstrap/cache`
--   Cổng 8000 bị chiếm: `php artisan serve --port=8001`
-
----
+12. chạy npm run dev
+    nhớ chạy song song với php artisan serve
 
 Cập nhật: {datetime.now().strftime("%d/%m/%Y")}
