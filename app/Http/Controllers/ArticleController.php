@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
@@ -34,15 +34,21 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'excerpt' => 'nullable|string',
             'content' => 'nullable|string',
-            'cover_image' => 'nullable|url',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        // Lưu file ảnh nếu có
+        $path = null;
+        if ($request->hasFile('cover_image')) {
+            $path = $request->file('cover_image')->store('articles', 'public');
+        }
 
         $article = Article::create([
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']),
             'excerpt' => $validated['excerpt'] ?? '',
             'content' => $validated['content'] ?? '',
-            'cover_image' => $validated['cover_image'] ?? null,
+            'cover_image' => $path,
             'user_id' => Auth::id(),
             'published_at' => Carbon::now(),
         ]);
@@ -54,7 +60,7 @@ class ArticleController extends Controller
     {
         $article->load([
             'author:id,name',
-            'comments.user:id,name' // load người viết comment để hiện avatar/tên
+            'comments.user:id,name'
         ]);
         return view('articles.show', compact('article'));
     }
@@ -78,10 +84,25 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'excerpt' => 'nullable|string',
             'content' => 'nullable|string',
-            'cover_image' => 'nullable|url',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $article->update($validated);
+        // Nếu có ảnh mới thì upload và thay thế
+        if ($request->hasFile('cover_image')) {
+            // Xóa ảnh cũ (nếu có)
+            if ($article->cover_image && Storage::disk('public')->exists($article->cover_image)) {
+                Storage::disk('public')->delete($article->cover_image);
+            }
+            $path = $request->file('cover_image')->store('articles', 'public');
+            $article->cover_image = $path;
+        }
+
+        $article->update([
+            'title' => $validated['title'],
+            'excerpt' => $validated['excerpt'] ?? '',
+            'content' => $validated['content'] ?? '',
+            'cover_image' => $article->cover_image,
+        ]);
 
         return redirect()->route('articles.index')->with('success', 'Cập nhật bài viết thành công!');
     }
@@ -92,7 +113,13 @@ class ArticleController extends Controller
             abort(403, 'Bạn không có quyền xóa bài này');
         }
 
+        // Xóa ảnh khi xóa bài
+        if ($article->cover_image && Storage::disk('public')->exists($article->cover_image)) {
+            Storage::disk('public')->delete($article->cover_image);
+        }
+
         $article->delete();
         return redirect()->route('articles.index')->with('success', 'Xóa bài viết thành công!');
     }
 }
+    

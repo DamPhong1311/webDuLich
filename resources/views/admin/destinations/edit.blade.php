@@ -2,8 +2,9 @@
 @section('content')
 <h2>Chỉnh sửa: {{ $destination->title }}</h2>
 
-<form action="{{ route('admin.destinations.update', $destination) }}" method="POST" enctype="multipart/form-data">
-  @method('PUT')
-  @include('admin.destinations._form')
+<form method="POST" action="{{ route('admin.destinations.update', $destination) }}" enctype="multipart/form-data">
+    @csrf
+    @method('PUT')
+    @include('admin.destinations._form')
 </form>
 @endsection

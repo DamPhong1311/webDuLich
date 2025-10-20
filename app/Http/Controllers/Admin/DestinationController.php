@@ -8,50 +8,53 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+
 class DestinationController extends Controller
 {
-
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $items = Destination::orderBy('created_at', 'desc')->paginate(12);
         return view('admin.destinations.index', compact('items'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('admin.destinations.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'excerpt' => 'nullable|string|max:500',
             'content' => 'nullable|string',
-            'cover_image' => 'nullable|url',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'location' => 'nullable|string|max:255',
             'province' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             'published_at' => 'nullable|date',
             'featured' => 'nullable|boolean',
         ]);
 
+        // Upload ảnh bìa
+        if ($request->hasFile('cover_image')) {
+            $data['cover_image'] = $request->file('cover_image')->store('cover_images', 'public');
+        }
 
+        // Upload gallery
+        $galleryPaths = [];
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
+                if ($file->isValid()) {
+                    $galleryPaths[] = $file->store('gallery', 'public');
+                }
+            }
+        }
+        $data['gallery'] = !empty($galleryPaths) ? json_encode($galleryPaths) : null;
 
-        if ($request->has('gallery') && !empty($request->gallery)) {
-            $data['gallery'] = $request->gallery;
-        } else {
-            $data['gallery'] = null;
-        }   
-        // unique slug
+        // Slug duy nhất
         $slug = Str::slug($data['title']);
         $original = $slug;
         $i = 1;
@@ -62,58 +65,68 @@ class DestinationController extends Controller
         $data['slug'] = $slug;
 
         $data['featured'] = $request->has('featured');
+        $data['published_at'] = $data['published_at'] ?? Carbon::now();
 
-        // THÊM: Set published_at nếu không có giá trị
-        if (empty($data['published_at'])) {
-            $data['published_at'] = Carbon::now();
-        }
-
-        $destination = Destination::create($data);
+        Destination::create($data);
 
         return redirect()->route('admin.destinations.index')->with('success', 'Tạo điểm đến thành công.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Destination $destination)
     {
         return view('admin.destinations.show', compact('destination'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Destination $destination)
     {
         return view('admin.destinations.edit', compact('destination'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Destination $destination)
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'excerpt' => 'nullable|string|max:500',
             'content' => 'nullable|string',
-            'cover_image' => 'nullable|url',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'location' => 'nullable|string|max:255',
             'province' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             'published_at' => 'nullable|date',
             'featured' => 'nullable|boolean',
         ]);
 
-        // Xử lý gallery từ URL
-
-        if ($request->has('gallery') && !empty($request->gallery)) {
-            $data['gallery'] = $request->gallery;
-        } else {
-            $data['gallery'] = null;
+        // Ảnh bìa
+        if ($request->hasFile('cover_image')) {
+            if ($destination->cover_image && Storage::disk('public')->exists($destination->cover_image)) {
+                Storage::disk('public')->delete($destination->cover_image);
+            }
+            $data['cover_image'] = $request->file('cover_image')->store('cover_images', 'public');
         }
 
-        // update slug only if title changed
+        // Gallery (merge ảnh cũ + ảnh mới)
+        $existingGallery = json_decode($destination->gallery ?? '[]', true);
+        $newGallery = [];
+
+        if ($request->hasFile('gallery')) {
+            foreach ($request->file('gallery') as $file) {
+                if ($file->isValid()) {
+                    $newGallery[] = $file->store('gallery', 'public');
+                }
+            }
+        }
+
+        // Nếu có ảnh mới → merge, nếu không thì giữ nguyên
+        if (!empty($newGallery)) {
+            $mergedGallery = array_merge($existingGallery, $newGallery);
+            $data['gallery'] = json_encode($mergedGallery);
+        } else {
+            $data['gallery'] = json_encode($existingGallery);
+        }
+
+        // Slug
         if ($data['title'] !== $destination->title) {
             $slug = Str::slug($data['title']);
             $original = $slug;
@@ -127,20 +140,57 @@ class DestinationController extends Controller
 
         $data['featured'] = $request->has('featured');
 
-
         $destination->update($data);
 
-        return redirect()->route('admin.destinations.index')->with('success', 'Cập nhật thành công.');
+        return redirect()->route('admin.destinations.index')->with('success', 'Cập nhật điểm đến thành công.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Destination $destination)
     {
+        // Xóa ảnh bìa
+        if ($destination->cover_image && Storage::disk('public')->exists($destination->cover_image)) {
+            Storage::disk('public')->delete($destination->cover_image);
+        }
+
+        // Xóa ảnh gallery
+        $gallery = json_decode($destination->gallery ?? '[]', true);
+        foreach ($gallery as $img) {
+            if (Storage::disk('public')->exists($img)) {
+                Storage::disk('public')->delete($img);
+            }
+        }
 
         $destination->delete();
 
         return redirect()->route('admin.destinations.index')->with('success', 'Xóa điểm đến thành công.');
+    }
+
+    // Xóa ảnh riêng trong gallery (AJAX)
+    public function removeGalleryImage(Request $request, Destination $destination)
+    {
+        $request->validate([
+            'image_path' => 'required|string',
+        ]);
+
+        $imagePath = $request->image_path;
+        $gallery = json_decode($destination->gallery ?? '[]', true);
+
+        if (($key = array_search($imagePath, $gallery)) !== false) {
+            // Xóa file thật
+            if (Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            unset($gallery[$key]);
+            $gallery = array_values($gallery);
+
+            $destination->update([
+                'gallery' => !empty($gallery) ? json_encode($gallery) : null,
+            ]);
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 404);
     }
 }

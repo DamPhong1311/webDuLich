@@ -25,7 +25,13 @@
 
     {{-- ẢNH CHÍNH --}}
     @if($article->cover_image)
-    <img src="{{ $article->cover_image }}" alt="{{ $article->title }}" class="article-cover-image">
+        @if(Str::startsWith($article->cover_image, ['http://', 'https://']))
+            {{-- Ảnh link --}}
+            <img src="{{ $article->cover_image }}" alt="{{ $article->title }}" class="article-cover-image">
+        @else
+            {{-- Ảnh upload --}}
+            <img src="{{ asset('storage/' . $article->cover_image) }}" alt="{{ $article->title }}" class="article-cover-image">
+        @endif
     @endif
 
     {{-- TRÍCH ĐOẠN --}}
@@ -42,4 +48,4 @@
     @include('components.comments', ['model' => $article])
 
 </article>
-@endsection
+@endsection 
