@@ -1,0 +1,54 @@
+.admin-articles-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-articles-create-btn {
+    padding: 8px 12px;
+    background: #0b74de;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.admin-articles-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.admin-articles-table th,
+.admin-articles-table td {
+    text-align: left;
+    padding: 8px 4px;
+}
+
+.admin-articles-table th {
+    border-bottom: 1px solid #eee;
+}
+
+.admin-articles-table tr {
+    border-bottom: 1px solid #f6f6f6;
+}
+
+.admin-articles-actions a {
+    margin-right: 8px;
+    color: #0b74de;
+    text-decoration: none;
+}
+
+.admin-articles-actions a:hover {
+    text-decoration: underline;
+}
+
+.admin-articles-delete-btn {
+    background: none;
+    border: 0;
+    color: #d00;
+    cursor: pointer;
+}
+
+.admin-articles-pagination {
+    margin-top: 12px;
+}

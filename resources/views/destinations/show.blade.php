@@ -67,65 +67,6 @@
     </div>
     @include('components.comments', ['model' => $destination])
 
-    <style>
-    .destination-article {
-        max-width: 900px;
-        margin: auto;
-    }
-
-    .destination-slug {
-        color: #888;
-        font-size: 14px;
-    }
-
-    .destination-location {
-        color: #777;
-    }
-
-    .destination-cover-image {
-        width: 100%;
-        max-height: 450px;
-        object-fit: cover;
-        border-radius: 6px;
-        margin: 12px 0;
-    }
-
-    .destination-excerpt {
-        font-style: italic;
-        color: #555;
-        background: #f8f8f8;
-        padding: 12px;
-        border-left: 4px solid #007bff;
-    }
-
-    .destination-gallery-title {
-        margin-top: 25px;
-    }
-
-    .destination-gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 10px;
-    }
-
-    .destination-gallery-img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-
-    .destination-content {
-        line-height: 1.8;
-        margin-top: 15px;
-    }
-
-    .destination-info {
-        margin-top: 20px;
-        font-size: 14px;
-        color: #666;
-    }
-    </style>
 </article>
 @endsection
 

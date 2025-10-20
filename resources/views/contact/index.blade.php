@@ -40,30 +40,4 @@
 
 <div class="contact-pagination">{{ $contacts->links() }}</div>
 
-<style>
-  .contact-success-message {
-    background: #e6ffed;
-    padding: 8px;
-    border: 1px solid #b4f2c0;
-    margin: 10px 0;
-  }
-
-  .contact-table-header-row {
-    background: #f2f2f2;
-  }
-
-  .contact-inline-form {
-    display: inline;
-  }
-
-  .contact-delete-btn {
-    color: red;
-    border: none;
-    background: none;
-  }
-
-  .contact-pagination {
-    margin-top: 15px;
-  }
-</style>
 @endsection

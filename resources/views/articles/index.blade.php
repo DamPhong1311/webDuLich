@@ -1,5 +1,7 @@
 @extends('layouts.myApp')
 @section('title', 'Bài viết')
+@push('styles')
+@vite(['resources/css/articles/index.css', 'resources/js/app.js'])
 @section('content')
 <h1>Bài viết mới nhất</h1>
 
@@ -40,73 +42,4 @@
 
 <div class="articles-pagination">{{ $articles->links() }}</div>
 
-<style>
-    .articles-add-wrapper {
-        margin-bottom: 20px;
-    }
-
-    .articles-add-btn {
-        padding: 8px 12px;
-        background: #007bff;
-        color: #fff;
-        border-radius: 4px;
-        text-decoration: none;
-    }
-
-    .articles-list-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 18px;
-    }
-
-    .articles-list-item {
-        border: 1px solid #eee;
-        padding: 12px;
-        border-radius: 6px;
-    }
-
-    .articles-list-link {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .articles-list-img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-
-    .articles-list-title {
-        margin-top: 10px;
-    }
-
-    .articles-list-excerpt {
-        color: #666;
-    }
-
-    .articles-list-actions {
-        margin-top: 10px;
-    }
-
-    .articles-list-edit {
-        margin-right: 10px;
-        color: #007bff;
-    }
-
-    .articles-list-delete-form {
-        display: inline;
-    }
-
-    .articles-list-delete-btn {
-        color: red;
-        border: none;
-        background: none;
-        cursor: pointer;
-    }
-
-    .articles-pagination {
-        margin-top: 20px;
-    }
-</style>
 @endsection

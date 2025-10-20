@@ -41,47 +41,5 @@
       Gửi liên hệ
     </button>
   </form>
-  <style>
-    .contact-form-container {
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .contact-form-success {
-      background: #e6ffed;
-      padding: 10px;
-      border: 1px solid #b4f2c0;
-      color: #2a5d3c;
-      margin: 10px 0;
-      border-radius: 6px;
-    }
-
-    .contact-form-main {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .contact-form-input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .contact-form-error {
-      color: red;
-    }
-
-    .contact-form-submit {
-      padding: 10px 16px;
-      border: none;
-      background: #007bff;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  </style>
 </div>
 @endsection

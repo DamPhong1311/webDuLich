@@ -9,7 +9,7 @@
                 <th>ID</th>
                 <th>Tên</th>
                 <th>Email</th>
-                <th>Nội dung</th>
+                <th>Nội dung</th>   
                 <th>Ngày tạo</th>
             </tr>
         </thead>

@@ -1,17 +1,20 @@
 @extends('layouts.myApp')
 
+@section('title', 'Quản lý Bài viết')
+
+@push('styles')
+@vite(['resources/css/admin/articles.css'])
+@endpush
+
 @section('content')
-<div style="display:flex;justify-content:space-between;align-items:center;">
-  <h2>Quản lý Bài viết</h2>
-  <a href="{{ route('admin.articles.create') }}" 
-     style="padding:8px 12px;background:#0b74de;color:#fff;border-radius:6px;text-decoration:none">
-     Tạo mới
-  </a>
+<div class="admin-articles-header">
+  <h2>Quản lý Bài viết</h2> 
+  <a href="{{ route('admin.articles.create') }}" class="admin-articles-create-btn">Tạo mới</a>
 </div>
 
-<table style="width:100%;border-collapse:collapse;margin-top:12px;">
+<table class="admin-articles-table">
   <thead>
-    <tr style="text-align:left;border-bottom:1px solid #eee;">
+    <tr>
       <th>Tiêu đề</th>
       <th>Danh mục</th>
       <th>Ngày đăng</th>
@@ -20,17 +23,18 @@
   </thead>
   <tbody>
     @foreach($items as $it)
-      <tr style="border-bottom:1px solid #f6f6f6;">
+      <tr>
         <td>{{ $it->title }}</td>
         <td>{{ $it->category ?? '-' }}</td>
         <td>{{ $it->published_at ? $it->published_at->format('Y-m-d') : '-' }}</td>
-        <td>
-          <a href="{{ route('articles.show', $it) }}" style="margin-right:8px">Xem</a>
-          <a href="{{ route('admin.articles.edit', $it) }}" style="margin-right:8px">Sửa</a>
-          <form action="{{ route('admin.articles.destroy', $it) }}" method="POST" style="display:inline" onsubmit="return confirm('Xác nhận xóa?')">
-            @csrf 
+        <td class="admin-articles-actions">
+          <a href="{{ route('articles.show', $it) }}">Xem</a>
+          <a href="{{ route('admin.articles.edit', $it) }}">Sửa</a>
+          <form action="{{ route('admin.articles.destroy', $it) }}" method="POST" style="display:inline"
+                onsubmit="return confirm('Xác nhận xóa?')">
+            @csrf
             @method('DELETE')
-            <button style="background:none;border:0;color:#d00;cursor:pointer">Xóa</button>
+            <button class="admin-articles-delete-btn">Xóa</button>
           </form>
         </td>
       </tr>
@@ -38,7 +42,7 @@
   </tbody>
 </table>
 
-<div style="margin-top:12px;">
+<div class="admin-articles-pagination">
   {{ $items->links() }}
 </div>
 @endsection
