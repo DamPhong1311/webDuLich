@@ -17,7 +17,7 @@
     <aside class="map-panel">
         <h2>Khám phá Việt Nam</h2>
         <div class="map-filter">
-            <!-- Gộp thành 1 thanh tìm kiếm thông minh -->
+    
             <div class="search-wrapper">
                 <input id="smartSearch" type="text" placeholder="Tìm điểm đến, bài viết, địa danh...">
                 <button id="btnSearch" type="button" aria-label="Tìm kiếm">🔎</button>
@@ -41,10 +41,8 @@
         </div>
     </aside>
 
-    <!-- Map container -->
     <div class="map-container">
         <div id="map"></div>
-        <!-- Lớp phủ cho trạng thái loading/error -->
         <div id="map-overlay">
             <div id="loader-element" class="loader"></div>
             <div id="message-element" class="overlay-message">Đang tải dữ liệu bản đồ...</div>
@@ -52,6 +50,5 @@
     </div>
 </div>
 
-{{-- Bạn sẽ cần cập nhật file JS để xử lý logic mới cho search bar và overlay --}}
 @vite('resources/js/map-explore.js')
 @endsection

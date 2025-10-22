@@ -38,7 +38,6 @@
             <a href="{{ route('articles.index') }}"
                 class="myapp-nav-link {{ request()->routeIs('articles.index') ? 'active' : '' }}">Bài viết</a>
 
-            {{-- Link Bản đồ khám phá (mục 10) --}}
             <a href="{{ route('map.explore') }}"
                 class="myapp-nav-link {{ request()->routeIs('map.explore') ? 'active' : '' }}">Bản đồ</a>
 
@@ -77,7 +76,7 @@
 
     <footer class="myapp-footer">© {{ date('Y') }} VietNamTravel</footer>
 
-    {{-- Cho phép view con đẩy script (Leaflet, picker map, v.v.) --}}
+   
     @stack('scripts')
 
 </body>

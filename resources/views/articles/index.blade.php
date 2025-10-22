@@ -16,11 +16,9 @@
     <article class="articles-list-item">
         <a href="{{ route('articles.show', $a) }}" class="articles-list-link">
             @if($a->cover_image)
-            {{-- Kiểm tra nếu là URL đầy đủ (http/https) --}}
             @if(Str::startsWith($a->cover_image, ['http://', 'https://']))
             <img src="{{ $a->cover_image }}" class="articles-list-img">
             @else
-            {{-- Ảnh upload trong storage --}}
             <img src="{{ asset('storage/' . $a->cover_image) }}" class="articles-list-img">
             @endif
             @endif
@@ -28,7 +26,6 @@
         </a>
         <p class="articles-list-excerpt">{{ Str::limit($a->excerpt ?? $a->content, 120) }}</p>
 
-        {{-- Nếu là tác giả thì hiện Edit / Delete --}}
         @if($a->user_id === auth()->id())
         <div class="articles-list-actions">
             <a href="{{ route('articles.edit', $a) }}" class="articles-list-edit">✏️ Sửa</a>

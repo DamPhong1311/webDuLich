@@ -25,13 +25,12 @@ Route::post('/contact', [ContactController::class, 'submitForm'])->name('contact
 require __DIR__ . '/auth.php';
 
 Route::middleware('auth')->group(function () {
-    // Dashboard & Profile
+
     Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // **CÁC ROUTES MỚI CHO YÊU THÍCH VÀ LƯU**
     Route::post('/destinations/{slug}/favorite', [DestinationActionController::class, 'toggleFavorite'])->name('destinations.toggleFavorite');
     Route::post('/destinations/{slug}/save', [DestinationActionController::class, 'toggleSave'])->name('destinations.toggleSave');
     Route::get('/saved-destinations', [DestinationActionController::class, 'savedDestinations'])->name('destinations.saved');

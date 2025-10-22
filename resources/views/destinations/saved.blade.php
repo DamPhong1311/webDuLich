@@ -9,7 +9,6 @@
 @else
     <div class="card-grid">
     @foreach($savedDestinations as $d)
-        {{-- We reuse the same card structure --}}
         @php
             $img = $d->cover_image;
             $isUrl = Str::startsWith($img, ['http://', 'https://']);

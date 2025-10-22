@@ -32,7 +32,7 @@ class Article extends Model
 
     public function getRouteKeyName()
     {
-        return 'slug'; // cho implicit route model binding
+        return 'slug'; 
     }
 
     public function scopeHasCoords($q)

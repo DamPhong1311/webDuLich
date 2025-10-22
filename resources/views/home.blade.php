@@ -4,13 +4,11 @@
 
 <div class="home-container">
 
-    {{-- Banner --}}
     <div class="home-banner">
         <h1>Khám phá di sản Việt Nam</h1>
         <p class="home-banner-desc">Những điểm đến hấp dẫn, bài viết hay và kinh nghiệm du lịch thú vị</p>
     </div>
 
-    {{-- DESTINATIONS --}}
     <section class="home-section">
         <h2 class="home-section-title">Điểm đến nổi bật</h2>
         <div class="home-destinations-grid">
@@ -20,9 +18,8 @@
                     $isUrl = Str::startsWith($img, ['http://', 'https://']);
                     $imgSrc = $isUrl ? $img : asset('storage/'.$img);
                 @endphp
-                {{-- Changed from <a> to <div> to contain buttons and link --}}
+            
                 <div class="home-destination-card">
-                    {{-- Action Buttons: Favorite and Save --}}
                     @auth
                         <div class="card-actions">
                             <button class="favorite-btn" data-slug="{{ $d->slug }}" title="Yêu thích">
@@ -61,7 +58,6 @@
         </div>
     </section>
 
-    {{-- ARTICLES --}}
     <section>
         <h2 class="home-section-title">Bài viết mới nhất</h2>
         <div class="home-articles-grid">

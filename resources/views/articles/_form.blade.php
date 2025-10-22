@@ -1,4 +1,4 @@
-{{-- resources/views/admin/articles/_form.blade.php --}}
+
 @csrf
 
 <div style="margin-bottom:10px;">
@@ -18,14 +18,11 @@
         style="width:100%;padding:8px">{{ old('content', $article->content ?? '') }}</textarea>
 </div>
 
-{{-- ==== ẢNH BÌA (có preview khi chọn file) ==== --}}
 <div class="form-group" style="margin-bottom:16px;">
     <label>Ảnh bìa</label><br>
     @php
     $cover = old('cover_image', $article->cover_image ?? '');
     @endphp
-
-    {{-- Preview nếu có ảnh cũ --}}
     <div id="cover-preview" style="margin-bottom:8px;">
         @if(!empty($cover))
         <img src="{{ asset('storage/' . $cover) }}" alt="cover"
@@ -34,11 +31,9 @@
 
     </div>
 
-    {{-- Input upload file --}}
     <input type="file" name="cover_image" accept="image/*" id="cover-input" class="form-input" style="width:100%;">
     <small style="color:#64748b;">Chọn ảnh bìa từ máy tính của bạn (ảnh sẽ hiển thị bên trên).</small>
 </div>
-{{-- ==== HẾT PHẦN ẢNH BÌA ==== --}}
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
     <div>
@@ -72,20 +67,18 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ==== Preview ảnh bìa ====
     const coverInput = document.getElementById('cover-input');
     const coverPreview = document.getElementById('cover-preview');
 
     if (coverInput) {
         coverInput.addEventListener('change', function(e) {
-            console.log('File selected:', e.target.files[0]); // Debug log
+            console.log('File selected:', e.target.files[0]); 
 
-            coverPreview.innerHTML = ''; // xóa ảnh cũ
+            coverPreview.innerHTML = ''; 
 
             if (e.target.files && e.target.files[0]) {
                 const file = e.target.files[0];
 
-                // Kiểm tra định dạng file
                 if (!file.type.match('image.*')) {
                     alert('Vui lòng chọn file ảnh!');
                     return;
@@ -94,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const reader = new FileReader();
 
                 reader.onload = function(ev) {
-                    console.log('File read successfully'); // Debug log
+                    console.log('File read successfully'); 
                     const img = document.createElement('img');
                     img.src = ev.target.result;
                     img.alt = 'Preview';
@@ -114,8 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    // ==== Bản đồ ====
     const latInputA = document.getElementById('art-latitude');
     const lngInputA = document.getElementById('art-longitude');
 
