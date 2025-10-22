@@ -38,12 +38,10 @@ class DestinationController extends Controller
             'featured' => 'nullable|boolean',
         ]);
 
-        // Upload ảnh bìa
         if ($request->hasFile('cover_image')) {
             $data['cover_image'] = $request->file('cover_image')->store('cover_images', 'public');
         }
 
-        // Upload gallery
         $galleryPaths = [];
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
@@ -54,7 +52,7 @@ class DestinationController extends Controller
         }
         $data['gallery'] = !empty($galleryPaths) ? json_encode($galleryPaths) : null;
 
-        // Slug duy nhất
+
         $slug = Str::slug($data['title']);
         $original = $slug;
         $i = 1;
@@ -65,6 +63,7 @@ class DestinationController extends Controller
         $data['slug'] = $slug;
 
         $data['featured'] = $request->has('featured');
+
         $data['published_at'] = $data['published_at'] ?? Carbon::now();
 
         Destination::create($data);
@@ -98,7 +97,6 @@ class DestinationController extends Controller
             'featured' => 'nullable|boolean',
         ]);
 
-        // Ảnh bìa
         if ($request->hasFile('cover_image')) {
             if ($destination->cover_image && Storage::disk('public')->exists($destination->cover_image)) {
                 Storage::disk('public')->delete($destination->cover_image);
@@ -106,7 +104,6 @@ class DestinationController extends Controller
             $data['cover_image'] = $request->file('cover_image')->store('cover_images', 'public');
         }
 
-        // Gallery (merge ảnh cũ + ảnh mới)
         $existingGallery = json_decode($destination->gallery ?? '[]', true);
         $newGallery = [];
 
@@ -118,7 +115,7 @@ class DestinationController extends Controller
             }
         }
 
-        // Nếu có ảnh mới → merge, nếu không thì giữ nguyên
+
         if (!empty($newGallery)) {
             $mergedGallery = array_merge($existingGallery, $newGallery);
             $data['gallery'] = json_encode($mergedGallery);
@@ -126,7 +123,7 @@ class DestinationController extends Controller
             $data['gallery'] = json_encode($existingGallery);
         }
 
-        // Slug
+
         if ($data['title'] !== $destination->title) {
             $slug = Str::slug($data['title']);
             $original = $slug;
@@ -147,12 +144,10 @@ class DestinationController extends Controller
 
     public function destroy(Destination $destination)
     {
-        // Xóa ảnh bìa
         if ($destination->cover_image && Storage::disk('public')->exists($destination->cover_image)) {
             Storage::disk('public')->delete($destination->cover_image);
         }
 
-        // Xóa ảnh gallery
         $gallery = json_decode($destination->gallery ?? '[]', true);
         foreach ($gallery as $img) {
             if (Storage::disk('public')->exists($img)) {
@@ -165,7 +160,6 @@ class DestinationController extends Controller
         return redirect()->route('admin.destinations.index')->with('success', 'Xóa điểm đến thành công.');
     }
 
-    // Xóa ảnh riêng trong gallery (AJAX)
     public function removeGalleryImage(Request $request, Destination $destination)
     {
         $request->validate([
@@ -176,7 +170,7 @@ class DestinationController extends Controller
         $gallery = json_decode($destination->gallery ?? '[]', true);
 
         if (($key = array_search($imagePath, $gallery)) !== false) {
-            // Xóa file thật
+   
             if (Storage::disk('public')->exists($imagePath)) {
                 Storage::disk('public')->delete($imagePath);
             }

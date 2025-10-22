@@ -22,8 +22,6 @@ class ContactController extends Controller
 
         Contact::create($data);
 
-        // nếu muốn gửi email, có thể thêm Mail::to(...)
-
         return redirect()->route('contact.form')->with('success', 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm.');
     }
 }

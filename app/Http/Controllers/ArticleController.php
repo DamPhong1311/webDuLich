@@ -23,7 +23,8 @@ class ArticleController extends Controller
     public function create()
     {
         if (!Auth::check()) {
-            abort(403, 'Bạn cần đăng nhập để tạo bài viết.');
+            return redirect()->route('login');
+            
         }
         return view('articles.create');
     }
@@ -37,7 +38,6 @@ class ArticleController extends Controller
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        // Lưu file ảnh nếu có
         $path = null;
         if ($request->hasFile('cover_image')) {
             $path = $request->file('cover_image')->store('articles', 'public');
@@ -87,9 +87,7 @@ class ArticleController extends Controller
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        // Nếu có ảnh mới thì upload và thay thế
         if ($request->hasFile('cover_image')) {
-            // Xóa ảnh cũ (nếu có)
             if ($article->cover_image && Storage::disk('public')->exists($article->cover_image)) {
                 Storage::disk('public')->delete($article->cover_image);
             }
@@ -113,7 +111,6 @@ class ArticleController extends Controller
             abort(403, 'Bạn không có quyền xóa bài này');
         }
 
-        // Xóa ảnh khi xóa bài
         if ($article->cover_image && Storage::disk('public')->exists($article->cover_image)) {
             Storage::disk('public')->delete($article->cover_image);
         }

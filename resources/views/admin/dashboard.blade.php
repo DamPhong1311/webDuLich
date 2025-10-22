@@ -13,15 +13,15 @@
 
    <div class="admin-dashboard-grid">
       <a href="{{ route('admin.destinations.index') }}" class="admin-dashboard-link admin-dashboard-link-destination">
-         📍 Quản lý Điểm đến
+          Quản lý Điểm đến
       </a>
 
       <a href="{{ route('admin.articles.index') }}" class="admin-dashboard-link admin-dashboard-link-article">
-         📝 Quản lý Bài viết
+          Quản lý Bài viết
       </a>
 
       <a href="{{ route('admin.contacts.index') }}" class="admin-dashboard-link admin-dashboard-link-contact">
-         ✉️ Quản lý Liên hệ
+          Quản lý Liên hệ
       </a>
    </div>
 </div>

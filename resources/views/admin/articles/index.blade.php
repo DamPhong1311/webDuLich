@@ -9,7 +9,7 @@
 @section('content')
 <div class="admin-articles-header">
   <h2>Quản lý Bài viết</h2> 
-  <a href="{{ route('admin.articles.create') }}" class="admin-articles-create-btn">Tạo mới</a>
+  <a href="{{ route('articles.create') }}" class="admin-articles-create-btn">Tạo mới</a>
 </div>
 
 <table class="admin-articles-table">
@@ -29,7 +29,7 @@
         <td>{{ $it->published_at ? $it->published_at->format('Y-m-d') : '-' }}</td>
         <td class="admin-articles-actions">
           <a href="{{ route('articles.show', $it) }}">Xem</a>
-          <a href="{{ route('admin.articles.edit', $it) }}">Sửa</a>
+          <a href="{{ route('articles.edit', $it) }}">Sửa</a>
           <form action="{{ route('admin.articles.destroy', $it) }}" method="POST" style="display:inline"
                 onsubmit="return confirm('Xác nhận xóa?')">
             @csrf
