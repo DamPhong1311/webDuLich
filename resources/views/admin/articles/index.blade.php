@@ -3,7 +3,8 @@
 @section('title', 'Quản lý Bài viết')
 
 @push('styles')
-@vite(['resources/css/admin/articles.css'])
+{{-- Dùng lại CSS của trang Destination để bảo đảm giống 100% --}}
+@vite(['resources/css/admin/destination_index.css'])
 @endpush
 
 @section('content')
@@ -42,7 +43,8 @@
   </tbody>
 </table>
 
-<div class="admin-articles-pagination">
-  {{ $items->links() }}
+    <div class="pagination-wrapper">
+        {{ $items->links() }}
+    </div>
 </div>
 @endsection

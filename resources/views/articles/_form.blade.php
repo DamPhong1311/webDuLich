@@ -22,13 +22,14 @@
 <div class="form-group" style="margin-bottom:16px;">
     <label>Ảnh bìa</label><br>
     @php
-        $cover = old('cover_image', $article->cover_image ?? '');
+    $cover = old('cover_image', $article->cover_image ?? '');
     @endphp
 
     {{-- Preview nếu có ảnh cũ --}}
     <div id="cover-preview" style="margin-bottom:8px;">
         @if(!empty($cover))
-            <img src="{{ asset('storage/' . $cover) }}" alt="cover" style="max-width:200px;border-radius:8px;margin-bottom:8px;">
+        <img src="{{ asset('storage/' . $cover) }}" alt="cover"
+            style="max-width:200px;border-radius:8px;margin-bottom:8px;">
         @endif
 
     </div>
@@ -74,24 +75,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==== Preview ảnh bìa ====
     const coverInput = document.getElementById('cover-input');
     const coverPreview = document.getElementById('cover-preview');
-    
+
     if (coverInput) {
         coverInput.addEventListener('change', function(e) {
             console.log('File selected:', e.target.files[0]); // Debug log
-            
+
             coverPreview.innerHTML = ''; // xóa ảnh cũ
-            
+
             if (e.target.files && e.target.files[0]) {
                 const file = e.target.files[0];
-                
+
                 // Kiểm tra định dạng file
                 if (!file.type.match('image.*')) {
                     alert('Vui lòng chọn file ảnh!');
                     return;
                 }
-                
+
                 const reader = new FileReader();
-                
+
                 reader.onload = function(ev) {
                     console.log('File read successfully'); // Debug log
                     const img = document.createElement('img');
@@ -103,42 +104,43 @@ document.addEventListener('DOMContentLoaded', function() {
                     img.style.display = 'block';
                     coverPreview.appendChild(img);
                 };
-                
+
                 reader.onerror = function() {
                     console.error('Error reading file');
                     alert('Có lỗi khi đọc file!');
                 };
-                
+
                 reader.readAsDataURL(file);
             }
         });
     }
-    
+
     // ==== Bản đồ ====
-    // Code bản đồ giữ nguyên...
     const latInputA = document.getElementById('art-latitude');
     const lngInputA = document.getElementById('art-longitude');
-    
-    // Chỉ khởi tạo bản đồ nếu tồn tại element
+
     if (document.getElementById('pickerMapArticle')) {
         const initLatA = parseFloat(latInputA?.value) || 16.0471;
         const initLngA = parseFloat(lngInputA?.value) || 108.2062;
-        
-        // Sử dụng dynamic import để tránh lỗi
+
         import('https://unpkg.com/leaflet@1.7.1/dist/leaflet-src.js')
             .then(L => {
-                const mapA = L.map('pickerMapArticle').setView([initLatA, initLngA], (latInputA?.value && lngInputA?.value) ? 12 : 6);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                const mapA = L.map('pickerMapArticle').setView([initLatA, initLngA], (latInputA?.value &&
+                    lngInputA?.value) ? 12 : 6);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '© OpenStreetMap'
                 }).addTo(mapA);
 
                 let markerA;
+
                 function setMarkerA(lat, lng) {
                     if (markerA) {
                         markerA.setLatLng([lat, lng]);
                     } else {
-                        markerA = L.marker([lat, lng], { draggable: true }).addTo(mapA);
+                        markerA = L.marker([lat, lng], {
+                            draggable: true
+                        }).addTo(mapA);
                         markerA.on('dragend', (e) => {
                             const p = e.target.getLatLng();
                             if (latInputA) latInputA.value = p.lat.toFixed(6);
@@ -148,11 +150,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (latInputA) latInputA.value = (+lat).toFixed(6);
                     if (lngInputA) lngInputA.value = (+lng).toFixed(6);
                 }
-                
+
                 if (latInputA?.value && lngInputA?.value) {
                     setMarkerA(initLatA, initLngA);
                 }
-                
+
                 mapA.on('click', (e) => setMarkerA(e.latlng.lat, e.latlng.lng));
             })
             .catch(err => {

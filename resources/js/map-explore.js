@@ -85,21 +85,24 @@ function hideOverlay() {
 
 
 // --- Popup template & Fetch Helper (No change) ---
-function popupHtml(item, type) {
-  const cover = item.cover_image ?
-    (item.cover_image.startsWith('http') ? item.cover_image : `/storage/${item.cover_image}`) :
+/**
+ * SỬA LỖI: item bây giờ là feature.properties
+ */
+function popupHtml(properties, type) {
+  const cover = properties.cover_image ?
+    (properties.cover_image.startsWith('http') ? properties.cover_image : `/storage/${properties.cover_image}`) :
     '';
-  const url = type === 'dest' ? `/destinations/${item.slug}` : `/articles/${item.slug}`;
+  const url = type === 'dest' ? `/destinations/${properties.slug}` : `/articles/${properties.slug}`;
   const badge = type === 'dest' ?
     '<span class="popup-badge">Điểm đến</span>' :
     '<span class="popup-badge article">Bài viết</span>';
-  const province = item.province ? `<p>📍 ${item.province}</p>` : '';
+  const province = properties.province ? `<p>📍 ${properties.province}</p>` : '';
   return `
     <div class="popup-card">
-      ${cover ? `<img src="${cover}" alt="${item.title}">` : `<div style="width:88px;height:72px;background:#f1f5f9;border-radius:10px;border:1px solid #e5e7eb;"></div>`}
+      ${cover ? `<img src="${cover}" alt="${properties.title}">` : `<div style="width:88px;height:72px;background:#f1f5f9;border-radius:10px;border:1px solid #e5e7eb;"></div>`}
       <div>
         ${badge}
-        <h3>${item.title}</h3>
+        <h3>${properties.title}</h3>
         ${province}
         <a href="${url}">Xem chi tiết →</a>
       </div>
@@ -120,17 +123,40 @@ Promise.all([
     fetchJson('/api/articles'),
   ])
   .then(([destinations, articles]) => {
-    ALL_DEST_MARKERS = (destinations || []).map(d => {
-      if (!d.latitude || !d.longitude) return null;
-      const m = L.marker([+d.latitude, +d.longitude], { title: d.title }).bindPopup(popupHtml(d, 'dest'));
-      m.vntData = { type: 'dest', title: d.title.toLowerCase(), province: (d.province || '').toLowerCase() };
+    
+    // SỬA LỖI: Lặp qua (destinations.features || []) và truy cập d.properties
+    ALL_DEST_MARKERS = (destinations.features || []).map(d => {
+      // GeoJSON là [lng, lat], Leaflet là [lat, lng]
+      const [lng, lat] = d.geometry.coordinates;
+      if (!lat || !lng) return null;
+      
+      const props = d.properties;
+      const m = L.marker([+lat, +lng], { title: props.title }).bindPopup(popupHtml(props, 'dest'));
+      
+      // Gán vntData từ props
+      m.vntData = { 
+        type: 'dest', 
+        title: (props.title || '').toLowerCase(), 
+        province: (props.province || '').toLowerCase() 
+      };
       return m;
     }).filter(Boolean);
 
-    ALL_ART_MARKERS = (articles || []).map(a => {
-      if (!a.latitude || !a.longitude) return null;
-      const m = L.marker([+a.latitude, +a.longitude], { title: a.title }).bindPopup(popupHtml(a, 'art'));
-      m.vntData = { type: 'art', title: a.title.toLowerCase() };
+    // SỬA LỖI: Lặp qua (articles.features || []) và truy cập a.properties
+    ALL_ART_MARKERS = (articles.features || []).map(a => {
+      // GeoJSON là [lng, lat], Leaflet là [lat, lng]
+      const [lng, lat] = a.geometry.coordinates;
+      if (!lat || !lng) return null;
+      
+      const props = a.properties;
+      const m = L.marker([+lat, +lng], { title: props.title }).bindPopup(popupHtml(props, 'art'));
+      
+      // Gán vntData từ props
+      m.vntData = { 
+        type: 'art', 
+        title: (props.title || '').toLowerCase() 
+        // Bài viết không có 'province' trong logic lọc nên không cần gán
+      };
       return m;
     }).filter(Boolean);
 
@@ -175,6 +201,7 @@ function applyFilter() {
   if (showDest) {
     const visibleDests = ALL_DEST_MARKERS.filter(m => {
       if (!q) return true;
+      // Logic lọc cho Điểm đến (đã sửa ở trên, vntData giờ đã đúng)
       return m.vntData.title.includes(q) || m.vntData.province.includes(q);
     });
     clusterDest.addLayers(visibleDests);
@@ -184,6 +211,7 @@ function applyFilter() {
   if (showArt) {
     const visibleArts = ALL_ART_MARKERS.filter(m => {
       if (!q) return true;
+      // Logic lọc cho Bài viết (đã sửa ở trên, vntData giờ đã đúng)
       return m.vntData.title.includes(q);
     });
     clusterArt.addLayers(visibleArts);
@@ -205,11 +233,34 @@ async function handleSearch() {
 
     const markersFound = applyFilter();
 
+    // Nếu lọc có kết quả, thì không cần geocode
+    if (markersFound > 0) {
+        // Phóng to đến các marker tìm thấy
+        try {
+            const visibleMarkers = [];
+            if ($fDest?.checked) visibleMarkers.push(...clusterDest.getLayers());
+            if ($fArt?.checked) visibleMarkers.push(...clusterArt.getLayers());
+            
+            if (visibleMarkers.length > 0) {
+                const visibleGroup = L.featureGroup(visibleMarkers);
+                const bounds = visibleGroup.getBounds();
+                if (bounds.isValid()) map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+            }
+        } catch (e) {
+            console.warn("Could not fit bounds to filtered markers.", e);
+        }
+        return; // Dừng lại sau khi lọc thành công
+    }
+
+    // Nếu lọc không có kết quả (markersFound === 0), thử geocoding
     if (markersFound === 0) {
-        if ($btnSearch) $btnSearch.innerHTML = '...';
+        if ($btnSearch) $btnSearch.disabled = true; // Vô hiệu hóa nút
         try {
             const place = await geocodeMapbox(q);
-            if (!place) return alert(`Không tìm thấy địa danh nào cho "${q}".`);
+            if (!place) {
+                alert(`Không tìm thấy địa danh nào cho "${q}".`);
+                return;
+            }
             
             const { lat, lon, display_name } = place;
             map.flyTo([lat, lon], 13, { duration: 1.2 });
@@ -219,7 +270,7 @@ async function handleSearch() {
             console.error(e);
             alert('Tìm kiếm địa danh lỗi. Vui lòng thử từ khoá khác hoặc kiểm tra lại MAPBOX_TOKEN.');
         } finally {
-            if ($btnSearch) $btnSearch.innerHTML = '🔎';
+            if ($btnSearch) $btnSearch.disabled = false; // Kích hoạt lại nút
         }
     }
 }
@@ -241,11 +292,13 @@ async function geocodeMapbox(q) {
 // --- NEW: Event Wiring ---
 function wireEventListeners() {
     if ($smartSearch) {
-        $smartSearch.addEventListener('input', applyFilter);
+        // Sửa: Chỉ lọc khi gõ, không tự động geocode
+        $smartSearch.addEventListener('input', applyFilter); 
+        
         $smartSearch.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                handleSearch();
+                handleSearch(); // Chỉ gọi hàm search chính khi nhấn Enter
             }
         });
     }
@@ -270,7 +323,10 @@ function wireEventListeners() {
 
     if ($btnLocate) {
         $btnLocate.addEventListener('click', () => {
-            if (!navigator.geolocation) return alert('Trình duyệt không hỗ trợ định vị.');
+            if (!navigator.geolocation) {
+                alert('Trình duyệt không hỗ trợ định vị.');
+                return;
+            }
             navigator.geolocation.getCurrentPosition(
                 pos => {
                     const { latitude, longitude } = pos.coords;

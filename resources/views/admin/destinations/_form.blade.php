@@ -20,11 +20,12 @@
 <div class="form-group">
     <label>Ảnh bìa</label>
     @php
-        $cover = old('cover_image', $destination->cover_image ?? '');
+    $cover = old('cover_image', $destination->cover_image ?? '');
     @endphp
     <div id="cover-preview">
         @if(!empty($cover))
-            <img src="{{ asset('storage/' . $cover) }}" alt="cover" style="max-width:200px;border-radius:8px;margin-bottom:8px;">
+        <img src="{{ asset('storage/' . $cover) }}" alt="cover"
+            style="max-width:200px;border-radius:8px;margin-bottom:8px;">
         @endif
     </div>
     <input type="file" name="cover_image" accept="image/*" id="cover-input" class="form-input">
@@ -33,24 +34,22 @@
 <div class="form-group">
     <label>Thư viện ảnh</label>
     @php
-        $galleryRaw = old('gallery', $destination->gallery ?? '[]');
-        $galleryArray = is_array($galleryRaw) ? $galleryRaw : (json_decode($galleryRaw, true) ?: []);
+    $galleryRaw = old('gallery', $destination->gallery ?? '[]');
+    $galleryArray = is_array($galleryRaw) ? $galleryRaw : (json_decode($galleryRaw, true) ?: []);
     @endphp
 
     <div id="gallery-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         @foreach($galleryArray as $index => $img)
-            <div class="gallery-item" style="position:relative;">
-                <img src="{{ asset('storage/' . $img) }}" alt="gallery"
-                     style="width:80px;height:80px;object-fit:cover;border-radius:4px;">
-                @if(isset($destination))
-                    <button type="button" class="remove-gallery-image"
-                        data-image-path="{{ $img }}"
-                        data-destination-id="{{ $destination->id }}"
-                        style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;
+        <div class="gallery-item" style="position:relative;">
+            <img src="{{ asset('storage/' . $img) }}" alt="gallery"
+                style="width:80px;height:80px;object-fit:cover;border-radius:4px;">
+            @if(isset($destination))
+            <button type="button" class="remove-gallery-image" data-image-path="{{ $img }}"
+                data-destination-id="{{ $destination->id }}" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;
                                border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;
                                display:flex;align-items:center;justify-content:center;">×</button>
-                @endif
-            </div>
+            @endif
+        </div>
         @endforeach
     </div>
 
@@ -58,8 +57,7 @@
         <input type="file" name="gallery[]" accept="image/*" class="form-input">
     </div>
 
-    <button type="button" id="add-gallery-input" class="btn" 
-        style="margin-top:8px;background:#3490dc;color:white;padding:6px 12px;border:none;
+    <button type="button" id="add-gallery-input" class="btn" style="margin-top:8px;background:#3490dc;color:white;padding:6px 12px;border:none;
                border-radius:4px;cursor:pointer;">
         + Thêm ảnh
     </button>
@@ -86,7 +84,8 @@
     <div>
         <label>Kinh độ (Longitude)</label>
         <input id="dest-longitude" name="longitude" type="text" inputmode="decimal"
-            value="{{ old('longitude', $destination->longitude ?? '') }}" placeholder="VD: 108.338000" class="form-input">
+            value="{{ old('longitude', $destination->longitude ?? '') }}" placeholder="VD: 108.338000"
+            class="form-input">
     </div>
 </div>
 
@@ -109,12 +108,12 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     // Preview ảnh bìa
     document.getElementById('cover-input')?.addEventListener('change', function(e) {
         const preview = document.getElementById('cover-preview');
         preview.innerHTML = '';
-        
+
         if (e.target.files[0]) {
             const reader = new FileReader();
             reader.onload = function(ev) {
@@ -133,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const galleryInputs = document.getElementById('gallery-inputs');
 
     // Khi bấm + Thêm ảnh → tạo thêm input file mới
-    addBtn.addEventListener('click', function () {
+    addBtn.addEventListener('click', function() {
         const newInput = document.createElement('input');
         newInput.type = 'file';
         newInput.name = 'gallery[]';
@@ -144,12 +143,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Xem trước ảnh mới được chọn (chưa upload)
-    galleryInputs.addEventListener('change', function (e) {
+    galleryInputs.addEventListener('change', function(e) {
         if (e.target.type === 'file' && e.target.files.length > 0) {
             const preview = document.getElementById('gallery-preview');
             [...e.target.files].forEach(file => {
                 const reader = new FileReader();
-                reader.onload = function (event) {
+                reader.onload = function(event) {
                     const img = document.createElement('img');
                     img.src = event.target.result;
                     img.style.width = '80px';

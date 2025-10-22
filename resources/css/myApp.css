@@ -456,4 +456,33 @@
             transition: none !important;
         }
     }
+    .pagination-wrapper {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination .page-link {
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    margin: 0 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.pagination .page-link:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
     /* </style> */
