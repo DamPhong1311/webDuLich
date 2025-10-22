@@ -3,17 +3,18 @@
 @section('title', 'Quản lý Bài viết')
 
 @push('styles')
-{{-- Dùng lại CSS của trang Destination để bảo đảm giống 100% --}}
+
 @vite(['resources/css/admin/destination_index.css'])
 @endpush
 
 @section('content')
-<div class="admin-articles-header">
+<div class="admin-shell">
+  <div class="admin-header">
   <h2>Quản lý Bài viết</h2> 
   <a href="{{ route('articles.create') }}" class="admin-articles-create-btn">Tạo mới</a>
 </div>
 
-<table class="admin-articles-table">
+<table class="admin-table">
   <thead>
     <tr>
       <th>Tiêu đề</th>
@@ -29,13 +30,13 @@
         <td>{{ $it->category ?? '-' }}</td>
         <td>{{ $it->published_at ? $it->published_at->format('Y-m-d') : '-' }}</td>
         <td class="admin-articles-actions">
-          <a href="{{ route('articles.show', $it) }}">Xem</a>
-          <a href="{{ route('articles.edit', $it) }}">Sửa</a>
-          <form action="{{ route('admin.articles.destroy', $it) }}" method="POST" style="display:inline"
+          <a href="{{ route('articles.show', $it) }}" class="link-action">Xem</a>
+          <a href="{{ route('articles.edit', $it) }}" class="link-action">Sửa</a>
+          <form action="{{ route('admin.articles.destroy', $it) }}"  method="POST"class="form-inline" 
                 onsubmit="return confirm('Xác nhận xóa?')">
             @csrf
             @method('DELETE')
-            <button class="admin-articles-delete-btn">Xóa</button>
+            <button class="btn-delete">Xóa</button>
           </form>
         </td>
       </tr>
@@ -46,5 +47,6 @@
     <div class="pagination-wrapper">
         {{ $items->links() }}
     </div>
+</div>
 </div>
 @endsection
