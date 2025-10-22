@@ -1,0 +1,76 @@
+
+body {
+    background: linear-gradient(135deg, #e0f2fe, #f1f5f9);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+form {
+    background: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
+}
+
+.mb-4.text-sm.text-gray-600 {
+    color: #475569;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    line-height: 1.6;
+}
+
+label {
+    font-weight: 600;
+    color: #334155;
+    display: block;
+    margin-bottom: 6px;
+}
+
+input[type="email"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.2s ease;
+    font-size: 15px;
+}
+
+input[type="email"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+button:hover {
+    background-color: #2563eb;
+}
+
+.text-red-600,
+.text-red-500 {
+    color: #dc2626;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.flex.items-center.justify-end.mt-4 {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
