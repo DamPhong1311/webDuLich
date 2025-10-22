@@ -16,13 +16,13 @@
     <article class="articles-list-item">
         <a href="{{ route('articles.show', $a) }}" class="articles-list-link">
             @if($a->cover_image)
-                {{-- Kiểm tra nếu là URL đầy đủ (http/https) --}}
-                @if(Str::startsWith($a->cover_image, ['http://', 'https://']))
-                    <img src="{{ $a->cover_image }}" class="articles-list-img">
-                @else
-                    {{-- Ảnh upload trong storage --}}
-                    <img src="{{ asset('storage/' . $a->cover_image) }}" class="articles-list-img">
-                @endif
+            {{-- Kiểm tra nếu là URL đầy đủ (http/https) --}}
+            @if(Str::startsWith($a->cover_image, ['http://', 'https://']))
+            <img src="{{ $a->cover_image }}" class="articles-list-img">
+            @else
+            {{-- Ảnh upload trong storage --}}
+            <img src="{{ asset('storage/' . $a->cover_image) }}" class="articles-list-img">
+            @endif
             @endif
             <h2 class="articles-list-title">{{ $a->title }}</h2>
         </a>
@@ -46,6 +46,6 @@
     @endforeach
 </div>
 
-<div class="articles-pagination">{{ $articles->links() }}</div>
+<div class="pagination-wrapper">{{ $articles->links() }}</div>
 
 @endsection

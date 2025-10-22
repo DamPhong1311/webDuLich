@@ -15,9 +15,10 @@
     @vite(['resources/css/destination/index.css', 'resources/js/app.js'])
     @vite(['resources/css/destination/show.css', 'resources/js/app.js'])
     @vite(['resources/css/destination/save.css', 'resources/js/app.js'])
-    
+
+
     @stack('styles')
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -56,9 +57,9 @@
 
                 @auth
                 <span class="myapp-user">Chào, {{ Auth::user()->name }}</span>
-        
+
                 <form method="POST" action="{{ route('logout') }}" class="myapp-logout-form">
-                    
+
                     @csrf
                     <button type="submit" class="myapp-logout-btn">Đăng xuất</button>
                 </form>
